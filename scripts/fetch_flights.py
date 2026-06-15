@@ -204,6 +204,27 @@ for f in todos_voos:
     if not empresa or not nr_voo or not origem or not destino:
         continue
     registros.append(normalizar_voo(f))
+
+    registros.append(normalizar_voo(f))
+
+# Remove duplicados antes do upsert para evitar erro:
+# ON CONFLICT DO UPDATE command cannot affect row a second time
+unicos = {}
+
+for r in registros:
+    chave = (
+        r.get("data_referencia"),
+        r.get("icao_empresa"),
+        r.get("numero_voo"),
+        r.get("icao_origem"),
+        r.get("icao_destino"),
+        r.get("etapa"),
+    )
+    unicos[chave] = r
+
+registros = list(unicos.values())
+
+print(f"Registros apos remover duplicados: {len(registros)}")
   # Remove duplicados antes do upsert para evitar erro:
 # ON CONFLICT DO UPDATE command cannot affect row a second time
 unicos = {}
